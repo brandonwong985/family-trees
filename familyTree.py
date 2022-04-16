@@ -94,6 +94,18 @@ class Person():
                 + self.eventInfo()  \
                 + self.treeInfo()  ## Comment out when not needed for debugging
 
+    def isDescendant(self, personID):
+        # Base case: returns True if personID is themselves
+        if self._id == personID:
+            return True
+        # For every person in the family, recursively check if they are a descendant
+        for fam in self._asSpouse:
+            if families[fam].isDescendantHelper(personID):
+                return True
+        return False
+    #def printAncestors(self, prefix='', gen = 0):
+    #    # Find the family in which this person is the child, then recursively call onto their parents
+    #    j = 1
 
 # end of class Person
  
@@ -158,6 +170,12 @@ class Family():
         childrenPart = '' if self._children == [] \
             else' Children: ' + ','.join(self._children)
         return spousePart + childrenPart
+
+    # Helper function for isDescendant which checks every member of the family if they are a descendant of personID
+    def isDescendantHelper(self, personID):
+        for child in self._children:
+            if persons[child].isDescendant(personID):
+                return True
 
 
 # end of class Family
