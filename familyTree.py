@@ -103,9 +103,14 @@ class Person():
             if families[fam].isDescendantHelper(personID):
                 return True
         return False
-    #def printAncestors(self, prefix='', gen = 0):
-    #    # Find the family in which this person is the child, then recursively call onto their parents
-    #    j = 1
+
+    def printAncestors(self, prefix=''):
+        # Find the family in which this person is the child, then recursively call onto their parents
+        if self._asChild is not None:
+            families[self._asChild].printAncestorsHelper(prefix)
+        count = len(prefix)//3
+        print(prefix + str(count) + " " + self.name())
+
 
 # end of class Person
  
@@ -176,6 +181,10 @@ class Family():
         for child in self._children:
             if persons[child].isDescendant(personID):
                 return True
+
+    def printAncestorsHelper(self, prefix):
+        persons[self._spouse1.personRef].printAncestors(prefix+'   ')
+        persons[self._spouse2.personRef].printAncestors(prefix+'   ')
 
 
 # end of class Family
