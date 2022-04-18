@@ -108,8 +108,8 @@ class Person():
         # Find the family in which this person is the child, then recursively call onto their parents
         if self._asChild is not None:
             families[self._asChild].printAncestorsHelper(prefix)
-        count = len(prefix)//3
-        print(prefix + str(count) + " " + self.name())
+        gen = len(prefix)//3
+        print(prefix + str(gen) + " " + self.name())
 
 
 # end of class Person
