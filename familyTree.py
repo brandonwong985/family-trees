@@ -42,6 +42,7 @@ class Person():
         self._id = ref
         self._asSpouse = []  # use a list to handle multiple families
         self._asChild = None
+        self._events = []
                 
     def addName(self, names):
         # Extracts name parts from a list of names and stores them
@@ -61,7 +62,7 @@ class Person():
 
     def printDescendants(self, prefix=''):
         # print info for this person and then call method in Family
-        print(prefix + self.name() + " " + self._id)
+        print(prefix + self.name() + " " + self.getEvents())
         # recursion stops when self is not a spouse
         for fam in self._asSpouse:
             families[fam].printFamily(self._id,prefix)
@@ -108,11 +109,18 @@ class Person():
         # Find the family in which this person is the child, then recursively call onto their parents
         if self._asChild is not None:
             families[self._asChild].printAncestorsHelper1(prefix, level)
-        print(prefix + str(level) + " " + self.name())
+        print(prefix + str(level) + " " + self.name() + ' ' + self.getEvents())
         if self._asChild is not None:
             families[self._asChild].printAncestorsHelper2(prefix, level)
 
+    def addEvent(self, event):
+        self._events.append(event)
 
+    def getEvents(self):
+        ret = ''
+        for e in self._events:
+            ret += e.getInfo() + ' '
+        return ret
 
 # end of class Person
  
@@ -134,6 +142,7 @@ class Family():
         self._spouse1 = None
         self._spouse2 = None
         self._children = []
+        self._events = []
 
     def addSpouse(self, personRef, tag):
         # Stores the string (personRef) indicating a spouse in this family
@@ -186,13 +195,64 @@ class Family():
 
     # Helper functions for printAncestors that prints each side of the parent's family separately
     def printAncestorsHelper1(self, prefix, level: int):
-        persons[self._spouse1.personRef].printAncestors(prefix+'   ', level+1)
+        if self._spouse1 is not None:
+            persons[self._spouse1.personRef].printAncestors(prefix+'   ', level+1)
 
     def printAncestorsHelper2(self, prefix, level: int):
-        persons[self._spouse2.personRef].printAncestors(prefix+'   ', level+1)
+        if self._spouse2 is not None:
+            persons[self._spouse2.personRef].printAncestors(prefix+'   ', level+1)
+
+    def addEvent(self, event):
+        self._events.append(event)
+        if event.getType() == 'MARR':
+            if self._spouse1 is not None:
+                persons[self._spouse1.personRef].addEvent(event)
+            if self._spouse2 is not None:
+                persons[self._spouse2.personRef].addEvent(event)
+
+    def getEvents(self):
+        ret = ''
+        for e in self._events:
+            ret += e.getInfo() + ' '
+        return ret
 
 
 # end of class Family
+
+# -----------------------------------------------------------------------
+
+class Event():
+    def __init__(self, tag, date=None, place=None):
+        # Initializes a new Event object
+        self._type = tag
+        self._date = date
+        self._place = place
+
+    def getType(self):
+        return self._type
+
+    def setInfo(self, desc, info):
+        if desc == 'DATE' and self._date is None:
+            self._date = info
+        elif desc == 'PLAC' and self._place is None:
+            self._place = info
+
+    def getInfo(self):
+        ret = ''
+        if self._date is not None or self._place is not None:
+            if self._type == 'BIRT':
+                ret += 'n: '
+            elif self._type == 'DEAT':
+                ret += 'd: '
+            elif self._type == 'MARR':
+                ret += 'm: '
+            if self._date is not None:
+                ret += self._date + ' '
+            if self._place is not None:
+                ret += self._place + ' '
+        return ret
+
+# end of class Event
 
 #-----------------------------------------------------------------------
 # Global dictionaries used by Person and Family to map INDI and FAM identifier
@@ -249,6 +309,16 @@ def processGEDCOM(file):
             elif tag == 'FAMC':
                 newPerson.addIsChild(getPointer(line))
             ## add code here to look for other fields
+            elif tag == 'BIRT' or tag == 'DEAT':
+                line = f.readline()
+                newEvent = Event(tag)
+                while line[0] == '2':
+                    desc = line[2:6].strip()
+                    info = line[7:].strip()
+                    newEvent.setInfo(desc, info)
+                    line = f.readline()
+                newPerson.addEvent(newEvent)
+                continue
 
             # read to go to next line
             line = f.readline()
@@ -264,8 +334,17 @@ def processGEDCOM(file):
                 newFamily.addSpouse(getPointer(line),'WIFE')
             elif tag == 'CHIL':
                 newFamily.addChild(getPointer(line))
-            ## add code here to look for other fields 
-
+            ## add code here to look for other fields
+            elif tag == 'MARR':
+                line = f.readline()
+                newEvent = Event(tag)
+                while line[0] == '2':
+                    desc = line[2:6].strip()
+                    info = line[7:].strip()
+                    newEvent.setInfo(desc, info)
+                    line = f.readline()
+                newFamily.addEvent(newEvent)
+                continue
             # read to go to next line
             line = f.readline()
 
