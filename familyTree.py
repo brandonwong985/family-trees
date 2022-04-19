@@ -109,7 +109,7 @@ class Person():
         # Find the family in which this person is the child, then recursively call onto their parents
         if self._asChild is not None:
             families[self._asChild].printAncestorsHelper1(prefix, level)
-        print(prefix + str(level) + " " + self.name() + ' ' + self.getEvents())
+        print(prefix + str(level) + " " + self.name() + ' ' + self._id+ ' ' + self.getEvents())
         if self._asChild is not None:
             families[self._asChild].printAncestorsHelper2(prefix, level)
 
@@ -121,6 +121,33 @@ class Person():
         for e in self._events:
             ret += e.getInfo() + ' '
         return ret
+
+    def printCousins(self, n=1):
+        print("First cousins for ", self.name())
+        cousins = list()
+        parents = set()
+        grandparents = set()
+        if self._asChild is not None:
+            for p in families[self._asChild].getParents():
+                if p is not None:
+                    parents.add(p)
+        for parent in parents:
+            if parent is not None:
+                for p in families[parent]._children:
+                        grandparents.add(p)
+        parents.add(self._asChild)
+        for grandparent in grandparents:
+            for fam in getPerson(grandparent)._asSpouse:
+                if getFamily(fam)._id not in parents:
+                    for child in getFamily(fam)._children:
+                        cousins.append(child)
+        if cousins:
+            for cousin in cousins:
+                print("   " + getPerson(cousin).name() + getPerson(cousin).getEvents())
+        else:
+            print("   No cousins")
+
+
 
 # end of class Person
  
@@ -216,7 +243,12 @@ class Family():
             ret += e.getInfo() + ' '
         return ret
 
+    def getParents(self):
+        return [getPerson(self._spouse1.personRef)._asChild, getPerson(self._spouse2.personRef)._asChild]
 
+    def getChildren(self):
+        if self._children is not None:
+            return self._children
 # end of class Family
 
 # -----------------------------------------------------------------------
