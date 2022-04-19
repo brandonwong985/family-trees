@@ -184,6 +184,7 @@ class Family():
             if persons[child].isDescendant(personID):
                 return True
 
+    # Helper functions for printAncestors that prints each side of the parent's family separately
     def printAncestorsHelper1(self, prefix, level: int):
         persons[self._spouse1.personRef].printAncestors(prefix+'   ', level+1)
 
