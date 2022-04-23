@@ -304,15 +304,18 @@ class Event():
         self._date = date
         self._place = place
 
+    # Return the type of event
     def getType(self):
         return self._type
 
+    # Function that sets event info
     def setInfo(self, desc, info):
         if desc == 'DATE' and self._date is None:
             self._date = info
         elif desc == 'PLAC' and self._place is None:
             self._place = info
 
+    # Function that returns event info as a string
     def getInfo(self):
         ret = ''
         if self._date is not None or self._place is not None:
