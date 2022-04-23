@@ -108,10 +108,10 @@ class Person():
     def printAncestors(self, prefix='', level=0):
         # Find the family in which this person is the child, then recursively call onto their parents
         if self._asChild is not None:
-            families[self._asChild].printAncestorsHelper1(prefix, level)
+            families[self._asChild].printAncestorsSpouse1(prefix, level)
         print(prefix + str(level) + " " + self.name() + ' ' + self._id+ ' ' + self.getEvents())
         if self._asChild is not None:
-            families[self._asChild].printAncestorsHelper2(prefix, level)
+            families[self._asChild].printAncestorsSpouse2(prefix, level)
 
     def addEvent(self, event):
         self._events.append(event)
@@ -122,28 +122,34 @@ class Person():
             ret += e.getInfo() + ' '
         return ret
 
+    def getAsSpouse(self):
+        return self._asSpouse
+
+    def getAsChild(self):
+        return self._asChild
+
     def printCousins(self, n=1):
         print("First cousins for ", self.name())
         cousins = list()
+        grandparent_family = set()
         parents = set()
-        grandparents = set()
         if self._asChild is not None:
             for p in families[self._asChild].getParents():
                 if p is not None:
                     parents.add(p)
-        for parent in parents:
-            if parent is not None:
-                for p in families[parent]._children:
-                        grandparents.add(p)
-        parents.add(self._asChild)
-        for grandparent in grandparents:
-            for fam in getPerson(grandparent)._asSpouse:
-                if getFamily(fam)._id not in parents:
-                    for child in getFamily(fam)._children:
-                        cousins.append(child)
+            for p in families[self._asChild].getParentsAsChild():
+                if p is not None:
+                    grandparent_family.add(p)
+            for fam in grandparent_family:
+                for parent in getFamily(fam).getChildren():
+                    if parent not in parents:
+                        for f in getPerson(parent).getAsSpouse():
+                            for child in getFamily(f).getChildren():
+                                if child not in cousins:
+                                    cousins.append(child)
         if cousins:
-            for cousin in cousins:
-                print("   " + getPerson(cousin).name() + getPerson(cousin).getEvents())
+            for c in cousins:
+                print("   " + getPerson(c).name() + getPerson(c).getEvents())
         else:
             print("   No cousins")
 
@@ -221,11 +227,11 @@ class Family():
                 return True
 
     # Helper functions for printAncestors that prints each side of the parent's family separately
-    def printAncestorsHelper1(self, prefix, level: int):
+    def printAncestorsSpouse1(self, prefix, level: int):
         if self._spouse1 is not None:
             persons[self._spouse1.personRef].printAncestors(prefix+'   ', level+1)
 
-    def printAncestorsHelper2(self, prefix, level: int):
+    def printAncestorsSpouse2(self, prefix, level: int):
         if self._spouse2 is not None:
             persons[self._spouse2.personRef].printAncestors(prefix+'   ', level+1)
 
@@ -244,11 +250,27 @@ class Family():
         return ret
 
     def getParents(self):
-        return [getPerson(self._spouse1.personRef)._asChild, getPerson(self._spouse2.personRef)._asChild]
+        res = []
+        if self._spouse1 is not None:
+            res.append(self._spouse1.personRef)
+        if self._spouse2 is not None:
+            res.append(self._spouse2.personRef)
+        return res
+
+    def getParentsAsChild(self):
+        res = []
+        if self._spouse1 is not None:
+            res.append(getPerson(self._spouse1.personRef).getAsChild())
+        if self._spouse2 is not None:
+            res.append(getPerson(self._spouse2.personRef).getAsChild())
+        return res
 
     def getChildren(self):
         if self._children is not None:
             return self._children
+
+    def getId(self):
+        return self._id
 # end of class Family
 
 # -----------------------------------------------------------------------
