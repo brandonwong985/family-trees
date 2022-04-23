@@ -121,34 +121,44 @@ class Person():
         if self._asChild is not None:
             families[self._asChild].printAncestorsSpouse2(prefix, level)
 
+    # Adds an event to the person's event list
     def addEvent(self, event):
         self._events.append(event)
 
+    # Returns a string with all the event information
     def getEvents(self):
         ret = ''
         for e in self._events:
             ret += e.getInfo() + ' '
         return ret
 
+    # Returns the family (or families) in which the person is a spouse
     def getAsSpouse(self):
         return self._asSpouse
 
+    # Returns the family (or families) in which the person is a child
     def getAsChild(self):
         return self._asChild
 
+    # Implementation for printing first cousins
     def printCousins(self, n=1):
         print("First cousins for ", self.name())
         cousins = list()
         grandparent_family = set()
         parents = set()
+        # Find family in which person is the child
         if self._asChild is not None:
             for p in families[self._asChild].getParents():
                 if p is not None:
+                    # Add their parents to a set
                     parents.add(p)
+            # Get the families for the person's grandparents
             for p in families[self._asChild].getParentsAsChild():
                 if p is not None:
                     grandparent_family.add(p)
             for fam in grandparent_family:
+                # For each child in the grandparent family that is not the original
+                # parents, get their children and add to the list of cousins
                 for parent in getFamily(fam).getChildren():
                     if parent not in parents:
                         for f in getPerson(parent).getAsSpouse():
@@ -234,15 +244,17 @@ class Family():
             if persons[child].isDescendant(personID):
                 return True
 
-    # Helper functions for printAncestors that prints each side of the parent's family separately
+    # Helper function for printAncestors that prints Spouse1's side of the parent's family
     def printAncestorsSpouse1(self, prefix, level: int):
         if self._spouse1 is not None:
             persons[self._spouse1.personRef].printAncestors(prefix+'   ', level+1)
 
+    # Helper function for printAncestors that prints Spouse2's side of the parent's family
     def printAncestorsSpouse2(self, prefix, level: int):
         if self._spouse2 is not None:
             persons[self._spouse2.personRef].printAncestors(prefix+'   ', level+1)
 
+    # Function to add a marriage event to the family, and to each of the parents in that family
     def addEvent(self, event):
         self._events.append(event)
         if event.getType() == 'MARR':
@@ -251,12 +263,14 @@ class Family():
             if self._spouse2 is not None:
                 persons[self._spouse2.personRef].addEvent(event)
 
+    # Function that returns a string of the family events
     def getEvents(self):
         ret = ''
         for e in self._events:
             ret += e.getInfo() + ' '
         return ret
 
+    # Function that returns a list of the parents in the family
     def getParents(self):
         res = []
         if self._spouse1 is not None:
@@ -265,6 +279,7 @@ class Family():
             res.append(self._spouse2.personRef)
         return res
 
+    # Function that returns a list of families in which the parent is a child
     def getParentsAsChild(self):
         res = []
         if self._spouse1 is not None:
@@ -273,12 +288,11 @@ class Family():
             res.append(getPerson(self._spouse2.personRef).getAsChild())
         return res
 
+    # Function that returns list of children
     def getChildren(self):
         if self._children is not None:
             return self._children
 
-    def getId(self):
-        return self._id
 # end of class Family
 
 # -----------------------------------------------------------------------
