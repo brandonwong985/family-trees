@@ -73,7 +73,7 @@ class Person():
         print(prefix + self.name() + " " + self.getEvents())
         # recursion stops when self is not a spouse
         for fam in self._asSpouse:
-            families[fam].printFamily(self._id,prefix)
+            families[fam].printFamily(self._id, prefix)
 
     def name (self):
         # returns a simple name string 
@@ -117,7 +117,7 @@ class Person():
         # Find the family in which this person is the child, then recursively call onto their parents
         if self._asChild is not None:
             families[self._asChild].printAncestorsSpouse1(prefix, level)
-        print(prefix + str(level) + " " + self.name() + ' ' + self._id+ ' ' + self.getEvents())
+        print(prefix + str(level) + " " + self.name() + ' ' + self.getEvents())
         if self._asChild is not None:
             families[self._asChild].printAncestorsSpouse2(prefix, level)
 
@@ -142,7 +142,7 @@ class Person():
 
     # Implementation for printing first cousins
     def printCousins(self, n=1):
-        print("First cousins for ", self.name())
+        print("First cousins for " + self.name())
         cousins = list()
         grandparent_family = set()
         parents = set()
@@ -167,7 +167,7 @@ class Person():
                                     cousins.append(child)
         if cousins:
             for c in cousins:
-                print("   " + getPerson(c).name() + getPerson(c).getEvents())
+                print("   " + getPerson(c).name() + " " + getPerson(c).getEvents())
         else:
             print("   No cousins")
 
