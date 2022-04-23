@@ -1,4 +1,12 @@
 """
+Brandon Wong
+CPSC 3400
+HW 2: Family Trees
+The code that I am submitting is original code and has not been copied
+from another source. I have written all the code I am submitting beyond
+the starting code from the given descendants.py file.
+
+
 GEDCOM parser design
 
 Create empty dictionaries of individuals and families
