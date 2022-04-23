@@ -2,10 +2,10 @@
 Brandon Wong
 CPSC 3400
 HW 2: Family Trees
+4/22/2022
 The code that I am submitting is original code and has not been copied
 from another source. I have written all the code I am submitting beyond
 the starting code from the given descendants.py file.
-
 
 GEDCOM parser design
 
@@ -94,7 +94,7 @@ class Person():
     
     def eventInfo(self):
         ## add code here to show information from events once they are recognized
-        return ''
+        return self.getEvents()
 
     def __str__(self):
         # Returns a string representing all info in a Person instance
@@ -161,8 +161,8 @@ class Person():
                 # parents, get their children and add to the list of cousins
                 for parent in getFamily(fam).getChildren():
                     if parent not in parents:
-                        for f in getPerson(parent).getAsSpouse():
-                            for child in getFamily(f).getChildren():
+                        for family in getPerson(parent).getAsSpouse():
+                            for child in getFamily(family).getChildren():
                                 if child not in cousins:
                                     cousins.append(child)
         if cousins:
