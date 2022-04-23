@@ -127,10 +127,10 @@ class Person():
 
     # Returns a string with all the event information
     def getEvents(self):
-        ret = ''
+        res = ''
         for e in self._events:
-            ret += e.getInfo() + ' '
-        return ret
+            res += e.getInfo() + ' '
+        return res
 
     # Returns the family (or families) in which the person is a spouse
     def getAsSpouse(self):
@@ -170,7 +170,6 @@ class Person():
                 print("   " + getPerson(c).name() + " " + getPerson(c).getEvents())
         else:
             print("   No cousins")
-
 
 
 # end of class Person
@@ -265,10 +264,10 @@ class Family():
 
     # Function that returns a string of the family events
     def getEvents(self):
-        ret = ''
+        res = ''
         for e in self._events:
-            ret += e.getInfo() + ' '
-        return ret
+            res += e.getInfo() + ' '
+        return res
 
     # Function that returns a list of the parents in the family
     def getParents(self):
@@ -290,8 +289,7 @@ class Family():
 
     # Function that returns list of children
     def getChildren(self):
-        if self._children is not None:
-            return self._children
+        return self._children
 
 # end of class Family
 
@@ -317,19 +315,19 @@ class Event():
 
     # Function that returns event info as a string
     def getInfo(self):
-        ret = ''
+        res = ''
         if self._date is not None or self._place is not None:
             if self._type == 'BIRT':
-                ret += 'n: '
+                res += 'n: '
             elif self._type == 'DEAT':
-                ret += 'd: '
+                res += 'd: '
             elif self._type == 'MARR':
-                ret += 'm: '
+                res += 'm: '
             if self._date is not None:
-                ret += self._date + ' '
+                res += self._date + ' '
             if self._place is not None:
-                ret += self._place + ' '
-        return ret
+                res += self._place + ' '
+        return res
 
 # end of class Event
 
