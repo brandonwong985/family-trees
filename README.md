@@ -1,5 +1,4 @@
 # family-trees
-Assignment for CPSC-3400 Languages and Computation at Seattle University.  
 Project with the following goals:  
 * Experience using Python classes
 * Understand and manipulate an interesting recursively-defined data structure
